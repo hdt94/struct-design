@@ -5,12 +5,14 @@ classdef Material < handle
     end
     
     methods
-        function Obj = Material(Young)
-            Obj.Young = Young;
-        end
-        
         function [Young] = getYoung(Obj)
             Young = [Obj(:).Young];
+        end
+    end
+    
+    methods
+        function setYoung(Obj, Young)
+            Obj.Young = Young;
         end
     end
 end

@@ -12,8 +12,8 @@ classdef Concrete < handle
     end
     
     
-    methods
-        function Obj = Concrete(MConcrete, Height, Width)
+    methods       
+        function initialize(Obj, MConcrete, Height, Width)
             validateattributes(MConcrete, {'material.Concrete'}, {'scalar'}, '', 'MConcrete');
             validateattributes(Height, {'numeric'}, {'scalar'}, '', 'Height');
             validateattributes(Width, {'numeric'}, {'scalar'}, '', 'Width');           
@@ -22,6 +22,6 @@ classdef Concrete < handle
             Obj.Width = Width;
             Obj.Ag = Obj.Height * Obj.Width;
             Obj.Ig = (Obj.Height^3) * Obj.Width / 12;
-        end               
+        end
     end
 end

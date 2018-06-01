@@ -4,8 +4,9 @@ classdef Rebar < handle
     %
     
     properties (SetAccess = private)
+        %
         Area = nan;
-                
+        %        
         Depth = nan;                
     end
     

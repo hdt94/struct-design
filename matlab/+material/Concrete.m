@@ -1,25 +1,52 @@
 classdef Concrete < Material
+    %
+    %
+    % Units: 'ksi', 'kg/cm2', 'MPa'
+    %   
+    %
+    % Example:
+    %   Concrete = material.Concrete();
+    %   Concrete.initialize(3, 0.003, 'ksi');
+    
     properties (SetAccess = private)
         % Nonnegative numeric scalar (1,1). Maximum compressive stress.
         Compression = nan;
         % Nonnegative numeric scalar (1,1). Cracking stress.
         Cracking = nan;
-        % Nonnegative numeric scalar
+        % Nonnegative numeric scalar (1,1). Ultimate strain.
         Strain_Ultimate = nan;
     end
     
     methods
-        function Obj = Concrete(Units, Compression, Strain_Ultimate)
-            validateattributes(Units, {'char'}, {'nonempty'}, '', 'Units');
-            validateattributes(Compression, {'numeric'}, {'scalar','nonnegative'}, '', 'Compression');
-            E = material.Concrete.calculateYoung(Units, Compression);     
-            Obj@Material(E);
-            Obj.Compression = Compression;
-            Obj.Cracking = Obj.calculateCracking(Units, Obj.Compression);
-            validateattributes(Strain_Ultimate, {'numeric'}, {'scalar','nonnegative'}, '', 'Strain_Ultimate');
-            Obj.Strain_Ultimate = Strain_Ultimate;            
+        
+        function Obj = Concrete()
+            
         end
         
+        function initialize(Obj, Compression, Strain_Ultimate, Units)
+            Obj.setCompression(Compression);
+            Obj.setStrain_Ultimate(Strain_Ultimate);
+            if nargin == 3
+                return
+            end
+            Obj.defineCracking(Units);
+            Obj.defineYoung(Units);
+        end
+    end
+    
+    methods
+        function defineCracking(Obj, Units)
+            Value = Obj.calculateCracking(Units, Obj.Compression);
+            Obj.setCracking(Value);
+        end
+        
+        function defineYoung(Obj, Units)
+            Value = Obj.calculateYoung(Units, Obj.Compression);
+            Obj.setYoung(Value);
+        end
+    end
+    
+    methods
         function [Compression] = getCompression(Obj)
             Compression = [Obj(:).Compression];
         end
@@ -30,6 +57,23 @@ classdef Concrete < Material
         
         function [Strain_Ultimate] = getStrain_Ultimate(Obj)
             Strain_Ultimate = [Obj(:).Strain_Ultimate];
+        end
+    end
+    
+    methods
+        function setCompression(Obj, Value)
+            validateattributes(Value, {'numeric'}, {'scalar','nonnegative'}, '', 'Value');
+            Obj.Compression = Value;
+        end
+        
+        function setCracking(Obj, Value)
+            validateattributes(Value, {'numeric'}, {'scalar','nonnegative'}, '', 'Value');
+            Obj.Cracking = Value;
+        end
+        
+        function setStrain_Ultimate(Obj, Value)
+            validateattributes(Value, {'numeric'}, {'scalar','nonnegative'}, '', 'Value');
+            Obj.Strain_Ultimate = Value;
         end
     end
     
@@ -45,7 +89,7 @@ classdef Concrete < Material
                 error('Concrete:calculateCracking:unknownUnits', 'Units "%s" are unknown', Units);
             end
         end
-                
+        
         function [E] = calculateYoung(Units, fc)
             if strcmpi(Units, 'MPa')
                 E = 4700 * sqrt(fc);
@@ -57,5 +101,5 @@ classdef Concrete < Material
                 error('Concrete:calculateYoung:unknownUnits', 'Units "%s" are unknown', Units);
             end
         end
-    end
-end
+    end % methods (Static)
+end % classdef ...
